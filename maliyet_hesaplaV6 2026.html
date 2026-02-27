@@ -747,16 +747,17 @@
         let lastPaketSecimi = document.getElementById("paketSecimi").value;
 
         function enforceMudahaleLimit(setToPersonelOnEnter = false) {
-            const personelSayisi = Math.max(0, parseInt(document.getElementById("personelSayisi").value) || 0);
+            const personelSayisi = Math.max(1, parseInt(document.getElementById("personelSayisi").value) || 1);
             const mudahaleInput = document.getElementById("mudahaleSayisi");
 
+            mudahaleInput.min = "1";
             mudahaleInput.max = String(personelSayisi);
 
             if (setToPersonelOnEnter) {
-                mudahaleInput.value = String(personelSayisi);
+                mudahaleInput.value = "1";
             }
 
-            let mudahaleSayisi = Math.max(0, parseInt(mudahaleInput.value) || 0);
+            let mudahaleSayisi = Math.max(1, parseInt(mudahaleInput.value) || 1);
             if (mudahaleSayisi > personelSayisi) {
                 mudahaleSayisi = personelSayisi;
             }
