@@ -336,4 +336,20 @@ V4 analiz raporuyla karşılaştırıldığında V5 2026 sürümünde:
 
 ---
 
+## 21. SON YAPILAN DEĞİŞİKLİK (27 Şubat 2026)
+
+`index.html` dosyasında, **PDF/yazdırma çıktısı** için banka hesapları bölümünün başlık tipografisi ve başlık-kart aralığı güncellenmiştir.
+
+### 21.1 Uygulanan Güncelleme
+- `@media print` altında `.bank-accounts h3` yazı boyutu artırıldı (**17px**).
+- `@media print` altında `.bank-accounts h4` yazı boyutu artırıldı (**14px**).
+- Başlık ile kartlar arasındaki görsel boşluk artırıldı (`h4` alt marjı **5mm**).
+- `@media print` altında `.bank-cards` için üst boşluk düzenlendi (`margin-top: 0`) ve yeni başlık boşluğu korunacak şekilde hizalandı.
+
+### 21.2 Etki Analizi
+- Değişiklik yalnızca yazdırma/PDF görünümünü etkiler; ekran (normal görüntü) düzeni ve hesaplama mantığı etkilenmez.
+- Amaç: PDF çıktısında başlık okunabilirliğini artırmak ve başlık-kart geçişini daha dengeli hale getirmek.
+
+---
+
 *Bu rapor, `maliyet_hesaplaV5 2026.html` dosyasının tüm yapısını, fonksiyonlarını, butonlarını, koşullu davranışlarını ve hesaplama mantığını kapsamaktadır.*
