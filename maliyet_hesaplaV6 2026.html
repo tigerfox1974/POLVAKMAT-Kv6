@@ -744,6 +744,24 @@
             "5": { sabit: 0.25, kisi: 0.015, denetim: 0.80 }
         };
         const digerOranlar = { sabit: 0.10, kisi: 0.01, denetim: 0.60 };
+        let lastPaketSecimi = document.getElementById("paketSecimi").value;
+
+        function enforceMudahaleLimit(setToPersonelOnEnter = false) {
+            const personelSayisi = Math.max(0, parseInt(document.getElementById("personelSayisi").value) || 0);
+            const mudahaleInput = document.getElementById("mudahaleSayisi");
+
+            mudahaleInput.max = String(personelSayisi);
+
+            if (setToPersonelOnEnter) {
+                mudahaleInput.value = String(personelSayisi);
+            }
+
+            let mudahaleSayisi = Math.max(0, parseInt(mudahaleInput.value) || 0);
+            if (mudahaleSayisi > personelSayisi) {
+                mudahaleSayisi = personelSayisi;
+            }
+            mudahaleInput.value = String(mudahaleSayisi);
+        }
 
         function toggleOtelSecenekleri() {
             const tur = document.getElementById("isletmeTuru").value;
@@ -752,6 +770,7 @@
 
         function toggleSertifika() {
             const paket = document.getElementById("paketSecimi").value;
+            const enteringPaket4 = paket === "4" && lastPaketSecimi !== "4";
             document.getElementById("sertifikaGroup").style.display = (paket === "4") ? "block" : "none";
             const discountGroup = document.getElementById("discountControlGroup");
             const useCustomDiscount = document.getElementById("useCustomDiscount");
@@ -759,6 +778,7 @@
 
             if (paket === "4") {
                 discountGroup.style.display = "block";
+                enforceMudahaleLimit(enteringPaket4);
             } else {
                 discountGroup.style.display = "none";
                 useCustomDiscount.checked = false;
@@ -767,6 +787,7 @@
             }
 
             updateDiscountInputState();
+            lastPaketSecimi = paket;
         }
 
         function formatTL(money) {
@@ -846,6 +867,9 @@
             }
             toggleOtelSecenekleri();
             toggleSertifika();
+            if (document.getElementById("paketSecimi").value === "4") {
+                enforceMudahaleLimit(false);
+            }
             hesapla();
         }
 
@@ -909,6 +933,9 @@
             document.getElementById("kurumUyari").style.display = ready ? "none" : "block";
             toggleOtelSecenekleri();
             toggleSertifika();
+            if (document.getElementById("paketSecimi").value === "4") {
+                enforceMudahaleLimit(false);
+            }
             updateDiscountInputState();
         }
 
@@ -961,7 +988,10 @@
                 finalTotal = p3_toplam;
             }
             else if (paket === "4") {
-                const mudahaleSayisi = parseInt(document.getElementById("mudahaleSayisi").value) || 0;
+                const personelSiniri = Math.max(0, parseInt(document.getElementById("personelSayisi").value) || 0);
+                const mudahaleInput = document.getElementById("mudahaleSayisi");
+                const mudahaleSayisi = Math.min(personelSiniri, Math.max(0, parseInt(mudahaleInput.value) || 0));
+                mudahaleInput.value = String(mudahaleSayisi);
                 const sertifikaMaliyeti = mudahaleSayisi * (asgariUcret * 0.10);
                 const hamToplam = p1_toplam + asgariUcret + p3_toplam + sertifikaMaliyeti;
                 const useCustomDiscount = document.getElementById("useCustomDiscount").checked;
