@@ -86,6 +86,13 @@
             outline: none;
         }
 
+        input:disabled,
+        select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #f7f7f7;
+        }
+
         /* BUTONLAR */
         .btn-group {
             display: flex;
@@ -107,6 +114,12 @@
             justify-content: center;
             gap: 8px;
             font-size: 14px;
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            filter: grayscale(10%);
         }
 
         .btn-calc {
@@ -403,6 +416,21 @@
             margin-top: 4px;
         }
 
+        .inline-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: #444;
+        }
+
+        .inline-check input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
         /* YAZDIRMA AYARLARI */
         @media print {
             body {
@@ -567,6 +595,16 @@
                 <div class="note"><i class="fas fa-info-circle"></i> Paket 4 için zorunludur.</div>
             </div>
 
+            <div class="form-group hidden" id="discountControlGroup">
+                <label>Kampanya İndirimi (%)</label>
+                <label class="inline-check">
+                    <input type="checkbox" id="useCustomDiscount">
+                    Özel indirim oranı kullan
+                </label>
+                <input type="number" id="discountRate" value="35" min="0" max="100" step="0.1" disabled>
+                <div class="note"><i class="fas fa-info-circle"></i> Yalnızca Paket 4 için geçerlidir.</div>
+            </div>
+
             <div class="btn-group">
                 <button class="btn btn-calc" onclick="hesapla()"><i class="fas fa-sync-alt"></i> Hesapla</button>
                 <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Teklif
@@ -699,6 +737,20 @@
         function toggleSertifika() {
             const paket = document.getElementById("paketSecimi").value;
             document.getElementById("sertifikaGroup").style.display = (paket === "4") ? "block" : "none";
+            const discountGroup = document.getElementById("discountControlGroup");
+            const useCustomDiscount = document.getElementById("useCustomDiscount");
+            const discountRate = document.getElementById("discountRate");
+
+            if (paket === "4") {
+                discountGroup.style.display = "block";
+            } else {
+                discountGroup.style.display = "none";
+                useCustomDiscount.checked = false;
+                discountRate.value = "35";
+                discountRate.disabled = true;
+            }
+
+            updateDiscountInputState();
         }
 
         function formatTL(money) {
@@ -717,15 +769,59 @@
                 "otelSinifi",
                 "personelSayisi",
                 "paketSecimi",
-                "mudahaleSayisi"
+                "mudahaleSayisi",
+                "useCustomDiscount",
+                "discountRate"
             ];
 
             fieldIds.forEach((id) => {
                 const field = document.getElementById(id);
                 if (field) {
                     field.disabled = !enabled;
+                    if (enabled) {
+                        field.removeAttribute("title");
+                    } else {
+                        field.title = "Önce kurum adı giriniz";
+                    }
                 }
             });
+
+            const calcButton = document.querySelector(".btn-calc");
+            const printButton = document.querySelector(".btn-print");
+            if (calcButton) {
+                calcButton.disabled = !enabled;
+                if (enabled) {
+                    calcButton.removeAttribute("title");
+                } else {
+                    calcButton.title = "Önce kurum adı giriniz";
+                }
+            }
+            if (printButton) {
+                printButton.disabled = !enabled;
+                if (enabled) {
+                    printButton.removeAttribute("title");
+                } else {
+                    printButton.title = "Önce kurum adı giriniz";
+                }
+            }
+
+            updateDiscountInputState();
+        }
+
+        function updateDiscountInputState() {
+            const isReady = hasValidKurumAdi();
+            const isPaket4 = document.getElementById("paketSecimi").value === "4";
+            const useCustomDiscount = document.getElementById("useCustomDiscount");
+            const discountRate = document.getElementById("discountRate");
+
+            if (!isPaket4) {
+                useCustomDiscount.checked = false;
+                discountRate.disabled = true;
+                return;
+            }
+
+            useCustomDiscount.disabled = !isReady;
+            discountRate.disabled = !isReady || !useCustomDiscount.checked;
         }
 
         function autoHesaplaIfReady() {
@@ -755,7 +851,9 @@
                 "otelSinifi",
                 "personelSayisi",
                 "paketSecimi",
-                "mudahaleSayisi"
+                "mudahaleSayisi",
+                "useCustomDiscount",
+                "discountRate"
             ];
 
             autoIds.forEach((id) => {
@@ -772,6 +870,7 @@
             document.getElementById("kurumUyari").style.display = ready ? "none" : "block";
             toggleOtelSecenekleri();
             toggleSertifika();
+            updateDiscountInputState();
         }
 
         function hesapla() {
@@ -824,7 +923,16 @@
                 const mudahaleSayisi = parseInt(document.getElementById("mudahaleSayisi").value) || 0;
                 const sertifikaMaliyeti = mudahaleSayisi * (asgariUcret * 0.10);
                 const hamToplam = p1_toplam + asgariUcret + p3_toplam + sertifikaMaliyeti;
-                const indirim = hamToplam * 0.35;
+                const useCustomDiscount = document.getElementById("useCustomDiscount").checked;
+                const discountRateValue = parseFloat(document.getElementById("discountRate").value);
+                const discountRate = useCustomDiscount && !isNaN(discountRateValue)
+                    ? Math.min(100, Math.max(0, discountRateValue)) / 100
+                    : 0.35;
+                const indirim = hamToplam * discountRate;
+                const discountPercentText = (discountRate * 100).toLocaleString('tr-TR', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 1
+                });
                 finalTotal = hamToplam - indirim;
 
                 rows += `<tr><td>Paket 1 (Temel Eğitim)</td><td style="text-align:right;">${formatTL(p1_toplam)}</td></tr>`;
@@ -832,7 +940,7 @@
                 rows += `<tr><td>Paket 3 (Denetim & Raporlama)</td><td style="text-align:right;">${formatTL(p3_toplam)}</td></tr>`;
                 rows += `<tr><td>Sertifikalı Personel (${mudahaleSayisi} Kişi)</td><td style="text-align:right;">${formatTL(sertifikaMaliyeti)}</td></tr>`;
                 rows += `<tr><td><em>Ara Toplam</em></td><td style="text-align:right;"><em>${formatTL(hamToplam)}</em></td></tr>`;
-                rows += `<tr class="discount-row"><td>Kampanya İndirimi (%35)</td><td style="text-align:right;">- ${formatTL(indirim)}</td></tr>`;
+                rows += `<tr class="discount-row"><td>Kampanya İndirimi (%${discountPercentText})</td><td style="text-align:right;">- ${formatTL(indirim)}</td></tr>`;
             }
 
             document.getElementById("kalemlerTablosu").innerHTML = rows;
