@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLVAK Teklif Hazırlama Sistemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* GENEL TASARIM */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* SOL TARA (GİRİŞ PANELİ) */
+        .input-panel {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-panel h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        /* SAĞ TARAF (ÖNİZLEME) */
+        .preview-panel {
+            flex: 1.2;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* FORM ELEMANLARI */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* BUTONLAR */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-calc {
+            background-color: #27ae60;
+        }
+
+        .btn-calc:hover {
+            background-color: #219150;
+        }
+
+        .btn-print {
+            background-color: #34495e;
+        }
+
+        .btn-print:hover {
+            background-color: #2c3e50;
+        }
+
+        /* TEKLİF KAĞIDI GÖRÜNÜMÜ */
+        .invoice-box {
+            border: 1px solid #eee;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #c0392b;
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #c0392b;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 5px 0;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .client-info {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .client-info span {
+            font-weight: bold;
+        }
+
+        .table-wrapper {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-row td {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+            border-top: 2px solid #333;
+        }
+
+        .discount-row {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        .signature-area {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            page-break-inside: avoid;
+        }
+
+        .sign-box {
+            text-align: center;
+            width: 40%;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .note {
+            font-size: 11px;
+            color: #e74c3c;
+            margin-top: 4px;
+        }
+
+        /* YAZDIRMA AYARLARI (CTRL+P BASINCA SADECE BURASI GÖRÜNÜR) */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .input-panel {
+                display: none;
+            }
+
+            .preview-panel {
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: 100%;
+                flex: none;
+                padding: 20px;
+            }
+
+            .btn-group {
+                display: none;
+            }
+
+            .main-container {
+                display: block;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <div class="input-panel">
+            <h2><i class="fas fa-calculator"></i> Veri Girişi</h2>
+
+            <div class="form-group">
+                <label>Kurum / İşletme Adı:</label>
+                <input type="text" id="kurumAdi" placeholder="Örn: Grand Pasha Hotel">
+            </div>
+
+            <div class="form-group">
+                <label>Brüt Asgari Ücret (TL):</label>
+                <input type="number" id="asgariUcret" value="35180">
+            </div>
+
+            <div class="form-group">
+                <label>İşletme Türü:</label>
+                <select id="isletmeTuru" onchange="toggleOtelSecenekleri()">
+                    <option value="otel">Otel / Turistik Tesis</option>
+                    <option value="diger">Diğer İşletmeler (Küçük İşletme/Kurum)</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="otelSinifiGroup">
+                <label>Otel Sınıfı:</label>
+                <select id="otelSinifi">
+                    <option value="1">1 Yıldız / Bungalov</option>
+                    <option value="2">2 Yıldız</option>
+                    <option value="3">3 Yıldız / Özel Belgeli / 2. Snf TK</option>
+                    <option value="4">4 Yıldız / Butik Otel</option>
+                    <option value="5">5 Yıldız / 1. Sınıf TK</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Personel Sayısı:</label>
+                <input type="number" id="personelSayisi" value="10">
+            </div>
+
+            <div class="form-group">
+                <label>Paket Seçimi:</label>
+                <select id="paketSecimi" onchange="toggleSertifika()">
+                    <option value="1">Paket 1 (Temel Eğitim)</option>
+                    <option value="2">Paket 2 (Tatbikat)</option>
+                    <option value="3">Paket 3 (Denetim)</option>
+                    <option value="4">Paket 4 (Full + Sertifika)</option>
+                </select>
+            </div>
+
+            <div class="form-group hidden" id="sertifikaGroup">
+                <label>Sertifika Alacak Kişi Sayısı:</label>
+                <input type="number" id="mudahaleSayisi" value="5">
+                <div class="note"><i class="fas fa-info-circle"></i> Paket 4 için zorunludur.</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-calc" onclick="hesapla()"><i class="fas fa-sync-alt"></i> Hesapla</button>
+                <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Teklif
+                    Yazdır</button>
+            </div>
+        </div>
+
+        <div class="preview-panel" id="teklifAlani">
+            <div class="invoice-box">
+                <div class="header">
+                    <h1>POLVAK</h1>
+                    <p>KIBRIS TÜRK POLİS GÜÇLENDİRME VAKFI</p>
+                    <p>Yangın Eğitimi Teklif Formu</p>
+                </div>
+
+                <div class="client-info">
+                    <p><strong>Sayın:</strong> <span id="outKurumAdi">................................</span> Yetkilisi,
+                    </p>
+                    <p><strong>Tarih:</strong> <span id="tarih"></span></p>
+                    <p>İşletmenizin yangın güvenliği eğitimi için belirlenen yasal tarifeye göre hesaplanan maliyet
+                        tablosu aşağıdadır.</p>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hizmet / Kalem</th>
+                                <th style="text-align: right;">Tutar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kalemlerTablosu">
+                            <tr>
+                                <td colspan="2" style="text-align:center; color:#999;">Lütfen hesapla butonuna
+                                    basınız...</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td>GENEL TOPLAM</td>
+                                <td style="text-align: right;" id="outToplam">0.00 TL</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="footer">
+                    <p>Bu belge bilgilendirme amaçlıdır. Kesin tutarlar POLVAK ile yapılacak sözleşmede belirlenir.</p>
+                </div>
+
+                <div class="signature-area">
+                    <div class="sign-box">
+                        POLVAK Yetkilisi<br>
+                        <br><br>
+                        (İmza)
+                    </div>
+                    <div class="sign-box">
+                        Kurum Yetkilisi<br>
+                        <br><br>
+                        (İmza / Kaşe)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bugünkü tarihi ayarla
+        document.getElementById("tarih").innerText = new Date().toLocaleDateString('tr-TR');
+
+        // VERİLER VE ORANLAR
+        const otelOranlar = {
+            "1": { sabit: 0.10, kisi: 0.01, denetim: 0.60 },
+            "2": { sabit: 0.10, kisi: 0.011, denetim: 0.65 },
+            "3": { sabit: 0.15, kisi: 0.012, denetim: 0.70 },
+            "4": { sabit: 0.20, kisi: 0.013, denetim: 0.75 },
+            "5": { sabit: 0.25, kisi: 0.015, denetim: 0.80 }
+        };
+        const digerOranlar = { sabit: 0.10, kisi: 0.01, denetim: 0.60 };
+
+        function toggleOtelSecenekleri() {
+            const tur = document.getElementById("isletmeTuru").value;
+            document.getElementById("otelSinifiGroup").style.display = (tur === "otel") ? "block" : "none";
+        }
+
+        function toggleSertifika() {
+            const paket = document.getElementById("paketSecimi").value;
+            document.getElementById("sertifikaGroup").style.display = (paket === "4") ? "block" : "none";
+        }
+
+        function formatTL(money) {
+            return money.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
+        }
+
+        function hesapla() {
+            // Girdileri Al
+            const kurumAdi = document.getElementById("kurumAdi").value || "İlgili Kurum";
+            document.getElementById("outKurumAdi").innerText = kurumAdi;
+
+            const asgariUcret = parseFloat(document.getElementById("asgariUcret").value);
+            const isletmeTuru = document.getElementById("isletmeTuru").value;
+            const personelSayisi = parseInt(document.getElementById("personelSayisi").value) || 0;
+            const paket = document.getElementById("paketSecimi").value;
+
+            // Oran Belirle
+            let oran = {};
+            if (isletmeTuru === "otel") {
+                const sinif = document.getElementById("otelSinifi").value;
+                oran = otelOranlar[sinif];
+            } else {
+                oran = digerOranlar;
+            }
+
+            // Temel Hesaplamalar
+            const sabitUcret = asgariUcret * oran.sabit;
+            const belgeUcreti = personelSayisi * (asgariUcret * oran.kisi);
+            const p1_toplam = sabitUcret + belgeUcreti;
+            const p3_toplam = asgariUcret * oran.denetim;
+
+            let rows = "";
+            let finalTotal = 0;
+
+            // Tablo Satırlarını Oluştur
+            if (paket === "1") {
+                rows += `<tr><td>Tesis Sabit Ücreti</td><td style="text-align:right;">${formatTL(sabitUcret)}</td></tr>`;
+                rows += `<tr><td>Personel Belge Ücreti (${personelSayisi} kişi)</td><td style="text-align:right;">${formatTL(belgeUcreti)}</td></tr>`;
+                rows += `<tr><td><strong>Paket 1 Toplamı</strong></td><td style="text-align:right;"><strong>${formatTL(p1_toplam)}</strong></td></tr>`;
+                finalTotal = p1_toplam;
+            }
+            else if (paket === "2") {
+                rows += `<tr><td>Paket 1 (Temel Eğitim)</td><td style="text-align:right;">${formatTL(p1_toplam)}</td></tr>`;
+                rows += `<tr><td>Tatbikat Ücreti (1 Asgari Ücret)</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>`;
+                finalTotal = p1_toplam + asgariUcret;
+            }
+            else if (paket === "3") {
+                rows += `<tr><td>Denetim ve Raporlama</td><td style="text-align:right;">${formatTL(p3_toplam)}</td></tr>`;
+                finalTotal = p3_toplam;
+            }
+            else if (paket === "4") {
+                const mudahaleSayisi = parseInt(document.getElementById("mudahaleSayisi").value) || 0;
+                const sertifikaMaliyeti = mudahaleSayisi * (asgariUcret * 0.10);
+                const hamToplam = p1_toplam + asgariUcret + p3_toplam + sertifikaMaliyeti;
+                const indirim = hamToplam * 0.35;
+                finalTotal = hamToplam - indirim;
+
+                rows += `<tr><td>Paket 1 (Temel Eğitim)</td><td style="text-align:right;">${formatTL(p1_toplam)}</td></tr>`;
+                rows += `<tr><td>Paket 2 (Tatbikat Farkı)</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>`;
+                rows += `<tr><td>Paket 3 (Denetim & Raporlama)</td><td style="text-align:right;">${formatTL(p3_toplam)}</td></tr>`;
+                rows += `<tr><td>Sertifikalı Personel (${mudahaleSayisi} Kişi)</td><td style="text-align:right;">${formatTL(sertifikaMaliyeti)}</td></tr>`;
+                rows += `<tr><td><em>Ara Toplam</em></td><td style="text-align:right;"><em>${formatTL(hamToplam)}</em></td></tr>`;
+                rows += `<tr class="discount-row"><td>Kampanya İndirimi (%35)</td><td style="text-align:right;">- ${formatTL(indirim)}</td></tr>`;
+            }
+
+            document.getElementById("kalemlerTablosu").innerHTML = rows;
+            document.getElementById("outToplam").innerText = formatTL(finalTotal);
+        }
+    </script>
+
+</body>
+
+</html>
