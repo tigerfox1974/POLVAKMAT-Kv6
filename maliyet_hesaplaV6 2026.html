@@ -397,6 +397,12 @@
             margin-top: 4px;
         }
 
+        .helper-note {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
         /* YAZDIRMA AYARLARI */
         @media print {
             body {
@@ -513,6 +519,7 @@
             <div class="form-group">
                 <label>Kurum / İşletme Adı:</label>
                 <input type="text" id="kurumAdi" placeholder="Örn: Grand Pasha Hotel">
+                <div class="helper-note" id="kurumUyari">Devam için en az 3 karakter giriniz.</div>
             </div>
 
             <div class="form-group">
@@ -698,6 +705,75 @@
             return money.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
         }
 
+        function hasValidKurumAdi() {
+            const kurumAdi = document.getElementById("kurumAdi").value.trim();
+            return kurumAdi.length >= 3;
+        }
+
+        function setFormFieldsEnabled(enabled) {
+            const fieldIds = [
+                "asgariUcret",
+                "isletmeTuru",
+                "otelSinifi",
+                "personelSayisi",
+                "paketSecimi",
+                "mudahaleSayisi"
+            ];
+
+            fieldIds.forEach((id) => {
+                const field = document.getElementById(id);
+                if (field) {
+                    field.disabled = !enabled;
+                }
+            });
+        }
+
+        function autoHesaplaIfReady() {
+            if (!hasValidKurumAdi()) {
+                return;
+            }
+            toggleOtelSecenekleri();
+            toggleSertifika();
+            hesapla();
+        }
+
+        function handleKurumAdiInput() {
+            const ready = hasValidKurumAdi();
+            setFormFieldsEnabled(ready);
+            document.getElementById("kurumUyari").style.display = ready ? "none" : "block";
+            if (ready) {
+                autoHesaplaIfReady();
+            }
+        }
+
+        function bindAutoCalcEvents() {
+            document.getElementById("kurumAdi").addEventListener("input", handleKurumAdiInput);
+
+            const autoIds = [
+                "asgariUcret",
+                "isletmeTuru",
+                "otelSinifi",
+                "personelSayisi",
+                "paketSecimi",
+                "mudahaleSayisi"
+            ];
+
+            autoIds.forEach((id) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener("input", autoHesaplaIfReady);
+                el.addEventListener("change", autoHesaplaIfReady);
+            });
+        }
+
+        function initializeFormState() {
+            const ready = hasValidKurumAdi();
+            setFormFieldsEnabled(ready);
+            document.getElementById("kurumUyari").style.display = ready ? "none" : "block";
+            toggleOtelSecenekleri();
+            toggleSertifika();
+        }
+
         function hesapla() {
             // Girdileri Al
             const kurumAdi = document.getElementById("kurumAdi").value;
@@ -762,6 +838,9 @@
             document.getElementById("kalemlerTablosu").innerHTML = rows;
             document.getElementById("outToplam").innerText = formatTL(finalTotal);
         }
+
+        bindAutoCalcEvents();
+        initializeFormState();
     </script>
 
 </body>
