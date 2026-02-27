@@ -134,6 +134,14 @@
             background-color: #002366;
         }
 
+        .btn-clear {
+            background-color: #7f8c8d;
+        }
+
+        .btn-clear:hover {
+            background-color: #6c7778;
+        }
+
         /* Logo mavisi */
         .btn-print:hover {
             background-color: #001540;
@@ -609,6 +617,7 @@
                 <button class="btn btn-calc" onclick="hesapla()"><i class="fas fa-sync-alt"></i> Hesapla</button>
                 <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Teklif
                     Yazdır</button>
+                <button class="btn btn-clear" onclick="temizleForm()"><i class="fas fa-eraser"></i> Temizle</button>
             </div>
         </div>
 
@@ -672,7 +681,7 @@
                     </div>
                 </div>
 
-                <div class="first-page-note">Banka hesap numaraları diğer sayfadadır.</div>
+                <div class="first-page-note">*POLVAK Banka hesap numaraları diğer sayfadadır.</div>
                 </div>
 
                 <div class="bank-accounts">
@@ -718,6 +727,11 @@
     <script>
         // Bugünkü tarihi ayarla
         document.getElementById("tarih").innerText = new Date().toLocaleDateString('tr-TR');
+        const KURUM_PLACEHOLDER_TEXT = "................................................";
+        const INITIAL_ROWS_HTML = `<tr>
+                                <td colspan="2" style="text-align:center; color:#999; padding:20px;">Lütfen sol taraftan
+                                    verileri girip 'Hesapla' butonuna basınız...</td>
+                            </tr>`;
 
         // VERİLER VE ORANLAR
         const otelOranlar = {
@@ -839,7 +853,30 @@
             document.getElementById("kurumUyari").style.display = ready ? "none" : "block";
             if (ready) {
                 autoHesaplaIfReady();
+            } else {
+                resetPreviewToInitial();
             }
+        }
+
+        function resetPreviewToInitial() {
+            document.getElementById("outKurumAdi").innerText = KURUM_PLACEHOLDER_TEXT;
+            document.getElementById("kalemlerTablosu").innerHTML = INITIAL_ROWS_HTML;
+            document.getElementById("outToplam").innerText = "0.00 TL";
+        }
+
+        function temizleForm() {
+            document.getElementById("kurumAdi").value = "";
+            document.getElementById("asgariUcret").value = "60618";
+            document.getElementById("isletmeTuru").value = "otel";
+            document.getElementById("otelSinifi").value = "1";
+            document.getElementById("personelSayisi").value = "10";
+            document.getElementById("paketSecimi").value = "1";
+            document.getElementById("mudahaleSayisi").value = "5";
+            document.getElementById("useCustomDiscount").checked = false;
+            document.getElementById("discountRate").value = "35";
+
+            resetPreviewToInitial();
+            initializeFormState();
         }
 
         function bindAutoCalcEvents() {
@@ -878,6 +915,8 @@
             const kurumAdi = document.getElementById("kurumAdi").value;
             if (kurumAdi) {
                 document.getElementById("outKurumAdi").innerText = kurumAdi;
+            } else {
+                document.getElementById("outKurumAdi").innerText = KURUM_PLACEHOLDER_TEXT;
             }
 
             const asgariUcret = parseFloat(document.getElementById("asgariUcret").value);
