@@ -162,8 +162,12 @@
         }
 
         .logo-img {
-            max-width: 350px;
+            width: min(100%, 350px);
+            max-width: 100%;
             height: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
             margin-bottom: 10px;
         }
 
@@ -543,6 +547,20 @@
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
+            }
+
+            .preview-panel {
+                padding: 16px;
+            }
+
+            .header {
+                margin-bottom: 18px;
+                padding-bottom: 12px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+                line-height: 1.25;
             }
         }
     </style>
