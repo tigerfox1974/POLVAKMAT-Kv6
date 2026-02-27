@@ -291,7 +291,8 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 8px;
         }
 
         .bank-card.isbankasi {
@@ -326,7 +327,7 @@
         }
 
         .bank-card h5 {
-            margin: 0 0 6px 0;
+            margin: 0;
             color: #ffffff;
             font-size: 12px;
             line-height: 1.25;
@@ -337,9 +338,9 @@
         }
 
         .bank-row {
-            margin: 4px 0;
-            font-size: 11px;
-            line-height: 1.4;
+            margin: 0;
+            font-size: 10.8px;
+            line-height: 1.35;
             color: rgba(255, 255, 255, 0.95);
             position: relative;
             z-index: 1;
@@ -349,11 +350,23 @@
             color: #ffffff;
         }
 
+        .bank-label-line {
+            margin: 0;
+            font-size: 10.2px;
+            line-height: 1.2;
+            color: rgba(255, 255, 255, 0.96);
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+        }
+
         .bank-iban {
             word-break: normal;
             white-space: nowrap;
-            font-size: 10.1px;
-            letter-spacing: 0.1px;
+            margin: 0;
+            font-size: 11px;
+            letter-spacing: 0.35px;
+            font-weight: 700;
         }
 
         .first-page-note {
@@ -427,23 +440,32 @@
 
             .bank-card {
                 width: 80mm;
-                min-height: 50mm;
+                min-height: 42mm;
                 border-radius: 5mm;
-                padding: 4mm;
+                padding: 3.2mm;
+                gap: 2.2mm;
             }
 
             .bank-card h5 {
-                font-size: 10px;
+                font-size: 10.8px;
+                line-height: 1.2;
             }
 
             .bank-row {
-                font-size: 9.4px;
-                line-height: 1.35;
+                font-size: 10.2px;
+                line-height: 1.28;
+            }
+
+            .bank-label-line {
+                font-size: 9.6px;
+                line-height: 1.15;
             }
 
             .bank-iban {
                 white-space: nowrap;
-                font-size: 8.8px;
+                font-size: 10.2px;
+                line-height: 1.18;
+                letter-spacing: 0.22px;
             }
 
             .input-panel {
@@ -615,27 +637,32 @@
                         <div class="bank-card isbankasi">
                             <h5>TÜRKİYE İŞBANKASI</h5>
                             <p class="bank-row"><strong>Hesap Numarası:</strong> 518569915</p>
-                            <p class="bank-row bank-iban"><strong>TL IBAN NO:</strong> TR04 0006 4000 0016 8130 0644 89</p>
+                            <p class="bank-label-line">TL IBAN NO:</p>
+                            <p class="bank-row bank-iban">TR04 0006 4000 0016 8130 0644 89</p>
                         </div>
                         <div class="bank-card ziraat">
                             <h5>T.C. ZİRAAT BANKASI</h5>
                             <p class="bank-row"><strong>Hesap Numarası:</strong> 860978218215003</p>
-                            <p class="bank-row bank-iban"><strong>TL IBAN NO:</strong> TR35 0001 0008 6097 8218 2150 03</p>
+                            <p class="bank-label-line">TL IBAN NO:</p>
+                            <p class="bank-row bank-iban">TR35 0001 0008 6097 8218 2150 03</p>
                         </div>
                         <div class="bank-card koop">
                             <h5>KIBRIS TÜRK KOOPERATİF MERKEZ BANKASI</h5>
                             <p class="bank-row"><strong>Hesap Numarası:</strong> 4093900</p>
-                            <p class="bank-row bank-iban"><strong>TL UBAN NO:</strong> CT72120000100000000004093900</p>
+                            <p class="bank-label-line">TL UBAN NO:</p>
+                            <p class="bank-row bank-iban">CT72120000100000000004093900</p>
                         </div>
                         <div class="bank-card vakiflar">
                             <h5>KIBRIS VAKIFLAR BANKASI</h5>
                             <p class="bank-row"><strong>Hesap Numarası:</strong> 401691987</p>
-                            <p class="bank-row bank-iban"><strong>TL UBAN NO:</strong> CT06110083100000000401691987</p>
+                            <p class="bank-label-line">TL UBAN NO:</p>
+                            <p class="bank-row bank-iban">CT06110083100000000401691987</p>
                         </div>
                         <div class="bank-card poliskoop">
                             <h5>KKTC POLİS YARDIMLAŞMA KOOPERATİFİ LTD.</h5>
                             <p class="bank-row"><strong>Hesap Numarası:</strong> C-96644</p>
-                            <p class="bank-row bank-iban"><strong>TL UBAN NO:</strong> CT31120000670000000000096644</p>
+                            <p class="bank-label-line">TL UBAN NO:</p>
+                            <p class="bank-row bank-iban">CT31120000670000000000096644</p>
                         </div>
                     </div>
                 </div>
