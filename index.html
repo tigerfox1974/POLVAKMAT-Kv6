@@ -423,15 +423,61 @@
         }
 
         .first-page-note {
-            display: none;
-            font-size: 9px;
+            display: block;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 10px;
+            font-size: 10px;
             color: #6b7280;
-            text-align: right;
-            margin-top: 12px;
+            text-align: center;
+            margin: 0;
+            font-weight: 600;
         }
 
         .first-page-frame {
             position: relative;
+            padding-bottom: 42px;
+            box-sizing: border-box;
+        }
+
+        body.pdf-export .first-page-frame {
+            position: relative !important;
+            min-height: auto !important;
+            display: block !important;
+            padding-bottom: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        body.pdf-export .first-page-note {
+            position: static !important;
+            display: block !important;
+            margin: 8mm 0 0 0 !important;
+            text-align: center;
+            font-size: 10.5px !important;
+            color: #555555 !important;
+            font-weight: 700 !important;
+        }
+
+        body.pdf-export .bank-accounts {
+            break-before: page;
+            page-break-before: always;
+            margin-top: 0;
+        }
+
+        body.pdf-export #teklifAlani {
+            min-height: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: #ffffff !important;
+        }
+
+        body.pdf-export #teklifAlani .invoice-box {
+            margin: 0 !important;
+            padding: 0 6mm !important;
+            box-sizing: border-box !important;
         }
 
         @media (max-width: 768px) {
@@ -490,11 +536,13 @@
                 display: block;
                 margin: 0;
                 text-align: center;
-                position: static;
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 2mm;
                 font-size: 10.5px;
                 color: #555555;
                 font-weight: 700;
-                margin-top: auto;
             }
 
             .first-page-frame {
@@ -503,7 +551,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-start;
-                padding-bottom: 3mm;
+                padding-bottom: 12mm;
                 box-sizing: border-box;
             }
 
@@ -974,19 +1022,26 @@
             pdfButton.disabled = true;
             pdfButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
 
-            const element = document.getElementById("teklifAlani");
+            const element = document.querySelector("#teklifAlani .invoice-box");
+            document.body.classList.add("pdf-export");
             const options = {
-                margin: [6, 6, 6, 6],
+                margin: [10, 15, 0, 15],
                 filename: buildPdfFileName(),
                 image: { type: "jpeg", quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    scrollX: -window.scrollX,
+                    scrollY: -window.scrollY
+                },
                 jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-                pagebreak: { mode: ["css", "legacy"] }
+                pagebreak: { mode: ["css"] }
             };
 
             html2pdf().set(options).from(element).save().catch(() => {
                 alert("PDF oluşturulurken bir hata oluştu.");
             }).finally(() => {
+                document.body.classList.remove("pdf-export");
                 isPdfExporting = false;
                 pdfButton.innerHTML = originalHtml;
                 pdfButton.disabled = !hasValidKurumAdi();
