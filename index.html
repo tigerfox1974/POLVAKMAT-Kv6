@@ -147,6 +147,14 @@
             background-color: #001540;
         }
 
+        .btn-pdf {
+            background-color: #001b4d;
+        }
+
+        .btn-pdf:hover {
+            background-color: #001033;
+        }
+
         /* TEKLİF KAĞIDI GÖRÜNÜMÜ */
         .invoice-box {
             border: none;
@@ -663,6 +671,8 @@
                 <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Teklif
                     Yazdır</button>
                 <button class="btn btn-clear" onclick="temizleForm()"><i class="fas fa-eraser"></i> Temizle</button>
+                <button class="btn btn-pdf" id="btnPdf" onclick="downloadPdf()"><i class="fas fa-file-pdf"></i> PDF
+                    İndir</button>
             </div>
         </div>
 
@@ -769,6 +779,7 @@
         </div>
     </div>
 
+    <script src="libs/html2pdf.bundle.min.js"></script>
     <script>
         // Bugünkü tarihi ayarla
         document.getElementById("tarih").innerText = new Date().toLocaleDateString('tr-TR');
@@ -788,6 +799,7 @@
         };
         const digerOranlar = { sabit: 0.10, kisi: 0.01, denetim: 0.60 };
         let lastPaketSecimi = document.getElementById("paketSecimi").value;
+        let isPdfExporting = false;
 
         function enforceMudahaleLimit(setToPersonelOnEnter = false) {
             const personelSayisi = Math.max(1, parseInt(document.getElementById("personelSayisi").value) || 1);
@@ -869,6 +881,7 @@
 
             const calcButton = document.querySelector(".btn-calc");
             const printButton = document.querySelector(".btn-print");
+            const pdfButton = document.getElementById("btnPdf");
             if (calcButton) {
                 calcButton.disabled = !enabled;
                 if (enabled) {
@@ -885,8 +898,79 @@
                     printButton.title = "Önce kurum adı giriniz";
                 }
             }
+            if (pdfButton) {
+                pdfButton.disabled = !enabled || isPdfExporting;
+                if (enabled) {
+                    pdfButton.removeAttribute("title");
+                } else {
+                    pdfButton.title = "Önce kurum adı giriniz";
+                }
+            }
 
             updateDiscountInputState();
+        }
+
+        function toSafeKurumText(input) {
+            const map = {
+                "ç": "c", "Ç": "C", "ğ": "g", "Ğ": "G", "ı": "i", "İ": "I", "ö": "o", "Ö": "O", "ş": "s", "Ş": "S", "ü": "u", "Ü": "U"
+            };
+            const normalized = input.split("").map((char) => map[char] || char).join("");
+            return normalized.replace(/[^a-zA-Z0-9]/g, "") || "Kurum";
+        }
+
+        function getPdfDatePart() {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, "0");
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const year = now.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        function buildPdfFileName() {
+            const kurumRaw = document.getElementById("kurumAdi").value.trim();
+            const kurumPart = toSafeKurumText(kurumRaw);
+            return `POLVAK_Teklif_${kurumPart}_${getPdfDatePart()}.pdf`;
+        }
+
+        function downloadPdf() {
+            if (isPdfExporting) {
+                return;
+            }
+
+            if (!hasValidKurumAdi()) {
+                alert("Önce kurum adı giriniz.");
+                return;
+            }
+
+            if (typeof html2pdf === "undefined") {
+                alert("PDF modülü yüklenemedi. Lütfen sayfayı yenileyiniz.");
+                return;
+            }
+
+            const pdfButton = document.getElementById("btnPdf");
+            const originalHtml = pdfButton.innerHTML;
+
+            isPdfExporting = true;
+            pdfButton.disabled = true;
+            pdfButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
+
+            const element = document.getElementById("teklifAlani");
+            const options = {
+                margin: [6, 6, 6, 6],
+                filename: buildPdfFileName(),
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+                pagebreak: { mode: ["css", "legacy"] }
+            };
+
+            html2pdf().set(options).from(element).save().catch(() => {
+                alert("PDF oluşturulurken bir hata oluştu.");
+            }).finally(() => {
+                isPdfExporting = false;
+                pdfButton.innerHTML = originalHtml;
+                pdfButton.disabled = !hasValidKurumAdi();
+            });
         }
 
         function updateDiscountInputState() {
