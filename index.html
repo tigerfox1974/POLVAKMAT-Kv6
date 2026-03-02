@@ -155,7 +155,7 @@
         }
 
         .btn-clear {
-            background-color: #ff6600;
+            background-color: #ff0000;
         }
 
         .btn-clear:hover {
@@ -963,6 +963,7 @@
 
             const calcButton = document.querySelector(".btn-calc");
             const printButton = document.querySelector(".btn-print");
+            const clearButton = document.querySelector(".btn-clear");
             const pdfButton = document.getElementById("btnPdf");
             if (calcButton) {
                 calcButton.disabled = !enabled;
@@ -978,6 +979,14 @@
                     printButton.removeAttribute("title");
                 } else {
                     printButton.title = "Önce kurum adı giriniz";
+                }
+            }
+            if (clearButton) {
+                clearButton.disabled = !enabled;
+                if (enabled) {
+                    clearButton.removeAttribute("title");
+                } else {
+                    clearButton.title = "Önce kurum adı giriniz";
                 }
             }
             if (pdfButton) {
