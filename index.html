@@ -95,13 +95,15 @@
 
         /* BUTONLAR */
         .btn-group {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             margin-top: 20px;
         }
 
         .btn {
+            flex: 1 1 105px;
+            min-width: 100px;
             padding: 12px;
             border: none;
             border-radius: 6px;
@@ -115,20 +117,22 @@
             gap: 8px;
             font-size: 14px;
             min-height: 46px;
-            white-space: normal;
+            white-space: nowrap;
             line-height: 1.1;
             text-align: center;
         }
 
         @media (max-width: 680px) {
-            .btn-group {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+            .btn {
+                flex: 1 1 calc(50% - 5px);
+                min-width: 120px;
             }
         }
 
         @media (max-width: 420px) {
-            .btn-group {
-                grid-template-columns: 1fr;
+            .btn {
+                flex: 1 1 100%;
+                min-width: 0;
             }
         }
 
