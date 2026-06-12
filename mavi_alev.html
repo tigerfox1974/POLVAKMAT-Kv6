@@ -227,6 +227,9 @@
 
         .table-wrapper {
             margin-top: 10px;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         table {
@@ -695,7 +698,8 @@
 
             <div class="form-group">
                 <label>Brüt Asgari Ücret (TL):</label>
-                <input type="number" id="asgariUcret" value="60618">
+                <input type="text" id="asgariUcretGoster" value="60.618,00" placeholder="Örn: 60.618,00" inputmode="decimal">
+                <input type="hidden" id="asgariUcret" value="60618">
             </div>
 
             <div class="form-group">
@@ -939,7 +943,7 @@
 
         function setFormFieldsEnabled(enabled) {
             const fieldIds = [
-                "asgariUcret",
+                "asgariUcretGoster",
                 "isletmeTuru",
                 "otelSinifi",
                 "personelSayisi",
@@ -1102,6 +1106,12 @@
         }
 
         function handleKurumAdiInput() {
+            // Büyük harfe çevir
+            const input = document.getElementById("kurumAdi");
+            const pos = input.selectionStart;
+            input.value = input.value.toLocaleUpperCase('tr-TR');
+            input.setSelectionRange(pos, pos);
+
             const ready = hasValidKurumAdi();
             setFormFieldsEnabled(ready);
             document.getElementById("kurumUyari").style.display = ready ? "none" : "block";
@@ -1118,9 +1128,35 @@
             document.getElementById("outToplam").innerText = "0.00 TL";
         }
 
+        function handleAsgariUcretInput() {
+            const el = document.getElementById("asgariUcretGoster");
+            const cursorPos = el.selectionStart;
+            const oldLen = el.value.length;
+
+            let raw = el.value.replace(/[^0-9,]/g, "");
+            const parts = raw.split(",");
+            let intPart = parts[0].replace(/^0+(?=\d)/, "") || "0";
+            let decPart = parts.length > 1 ? parts[1].substring(0, 2) : null;
+
+            const intFormatted = parseInt(intPart, 10).toLocaleString('tr-TR');
+            const displayValue = decPart !== null ? intFormatted + "," + decPart : intFormatted;
+
+            const numericValue = parseFloat(intPart.replace(/\./g, "") + (decPart !== null ? "." + decPart : "")) || 0;
+            document.getElementById("asgariUcret").value = numericValue;
+
+            el.value = displayValue;
+
+            const newLen = el.value.length;
+            const newPos = cursorPos + (newLen - oldLen);
+            try { el.setSelectionRange(newPos, newPos); } catch(e) {}
+
+            autoHesaplaIfReady();
+        }
+
         function temizleForm() {
             document.getElementById("kurumAdi").value = "";
             document.getElementById("asgariUcret").value = "60618";
+            document.getElementById("asgariUcretGoster").value = "60.618,00";
             document.getElementById("isletmeTuru").value = "otel";
             document.getElementById("otelSinifi").value = "1";
             document.getElementById("personelSayisi").value = "10";
@@ -1135,9 +1171,10 @@
 
         function bindAutoCalcEvents() {
             document.getElementById("kurumAdi").addEventListener("input", handleKurumAdiInput);
+            document.getElementById("asgariUcretGoster").addEventListener("input", handleAsgariUcretInput);
+            document.getElementById("asgariUcretGoster").addEventListener("blur", handleAsgariUcretInput);
 
             const autoIds = [
-                "asgariUcret",
                 "isletmeTuru",
                 "otelSinifi",
                 "personelSayisi",
