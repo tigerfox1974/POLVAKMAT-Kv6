@@ -698,7 +698,8 @@
 
             <div class="form-group">
                 <label>Brüt Asgari Ücret (TL):</label>
-                <input type="number" id="asgariUcret" value="60618">
+                <input type="text" id="asgariUcretGoster" value="60.618" placeholder="Örn: 60.618" inputmode="numeric">
+                <input type="hidden" id="asgariUcret" value="60618">
             </div>
 
             <div class="form-group">
@@ -707,7 +708,7 @@
             </div>
 
             <div class="form-group">
-                <label>Oran (%):</label>
+                <label>BAÜ. Oranı (%):</label>
                 <input type="number" id="hesaplamaOrani" value="5" min="0" max="100" step="0.1">
                 <div class="helper-note">Varsayılan oran %5'tir. Değiştirebilirsiniz.</div>
             </div>
@@ -850,7 +851,7 @@
 
         function setFormFieldsEnabled(enabled) {
             const fieldIds = [
-                "asgariUcret",
+                "asgariUcretGoster",
                 "personelSayisi",
                 "hesaplamaOrani"
             ];
@@ -987,6 +988,12 @@
         }
 
         function handleKurumAdiInput() {
+            // Büyük harfe çevir
+            const input = document.getElementById("kurumAdi");
+            const pos = input.selectionStart;
+            input.value = input.value.toLocaleUpperCase('tr-TR');
+            input.setSelectionRange(pos, pos);
+
             const ready = hasValidKurumAdi();
             setFormFieldsEnabled(ready);
             document.getElementById("kurumUyari").style.display = ready ? "none" : "block";
@@ -995,6 +1002,19 @@
             } else {
                 resetPreviewToInitial();
             }
+        }
+
+        function handleAsgariUcretInput() {
+            const el = document.getElementById("asgariUcretGoster");
+            // Sadece rakam ve nokta/virgül al
+            let raw = el.value.replace(/[^0-9]/g, "");
+            const numeric = parseInt(raw, 10) || 0;
+            document.getElementById("asgariUcret").value = numeric;
+            // Binlik ayraçlı göster
+            if (raw.length > 0) {
+                el.value = numeric.toLocaleString('tr-TR');
+            }
+            autoHesaplaIfReady();
         }
 
         function resetPreviewToInitial() {
@@ -1006,6 +1026,7 @@
         function temizleForm() {
             document.getElementById("kurumAdi").value = "";
             document.getElementById("asgariUcret").value = "60618";
+            document.getElementById("asgariUcretGoster").value = (60618).toLocaleString('tr-TR');
             document.getElementById("personelSayisi").value = "10";
             document.getElementById("hesaplamaOrani").value = "5";
 
@@ -1015,9 +1036,10 @@
 
         function bindAutoCalcEvents() {
             document.getElementById("kurumAdi").addEventListener("input", handleKurumAdiInput);
+            document.getElementById("asgariUcretGoster").addEventListener("input", handleAsgariUcretInput);
+            document.getElementById("asgariUcretGoster").addEventListener("blur", handleAsgariUcretInput);
 
             const autoIds = [
-                "asgariUcret",
                 "personelSayisi",
                 "hesaplamaOrani"
             ];
@@ -1057,8 +1079,7 @@
             const rows = `
                 <tr><td>Brüt Asgari Ücret</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>
                 <tr><td>Uygulanan Oran</td><td style="text-align:right;">%${oranText} = ${formatTL(kisiBasi)} / kişi</td></tr>
-                <tr><td>Personel Sayısı</td><td style="text-align:right;">${personelSayisi} kişi</td></tr>
-                <tr><td><strong>Yonca Eğitimi Ücreti (Toplam)</strong></td><td style="text-align:right;"><strong>${formatTL(finalTotal)}</strong></td></tr>`;
+                <tr><td>Personel Sayısı</td><td style="text-align:right;">${personelSayisi} kişi</td></tr>`;
 
             document.getElementById("kalemlerTablosu").innerHTML = rows;
             document.getElementById("outToplam").innerText = formatTL(finalTotal);
