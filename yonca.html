@@ -698,7 +698,7 @@
 
             <div class="form-group">
                 <label>Brüt Asgari Ücret (TL):</label>
-                <input type="text" id="asgariUcretGoster" value="60.618" placeholder="Örn: 60.618" inputmode="numeric">
+                <input type="text" id="asgariUcretGoster" value="60.618,00" placeholder="Örn: 60.618,00" inputmode="decimal">
                 <input type="hidden" id="asgariUcret" value="60618">
             </div>
 
@@ -1006,14 +1006,32 @@
 
         function handleAsgariUcretInput() {
             const el = document.getElementById("asgariUcretGoster");
-            // Sadece rakam ve nokta/virgül al
-            let raw = el.value.replace(/[^0-9]/g, "");
-            const numeric = parseInt(raw, 10) || 0;
-            document.getElementById("asgariUcret").value = numeric;
-            // Binlik ayraçlı göster
-            if (raw.length > 0) {
-                el.value = numeric.toLocaleString('tr-TR');
-            }
+            const cursorPos = el.selectionStart;
+            const oldLen = el.value.length;
+
+            // Sadece rakam ve virgül (ondalık) al
+            let raw = el.value.replace(/[^0-9,]/g, "");
+
+            // En fazla bir virgül
+            const parts = raw.split(",");
+            let intPart = parts[0].replace(/^0+(?=\d)/, "") || "0";
+            let decPart = parts.length > 1 ? parts[1].substring(0, 2) : null;
+
+            // Binlik nokta ekle
+            const intFormatted = parseInt(intPart, 10).toLocaleString('tr-TR');
+            const displayValue = decPart !== null ? intFormatted + "," + decPart : intFormatted;
+
+            // Sayısal değeri hidden input'a yaz
+            const numericValue = parseFloat(intPart.replace(/\./g, "") + (decPart !== null ? "." + decPart : "")) || 0;
+            document.getElementById("asgariUcret").value = numericValue;
+
+            el.value = displayValue;
+
+            // İmleç konumunu koru
+            const newLen = el.value.length;
+            const newPos = cursorPos + (newLen - oldLen);
+            try { el.setSelectionRange(newPos, newPos); } catch(e) {}
+
             autoHesaplaIfReady();
         }
 
@@ -1026,7 +1044,7 @@
         function temizleForm() {
             document.getElementById("kurumAdi").value = "";
             document.getElementById("asgariUcret").value = "60618";
-            document.getElementById("asgariUcretGoster").value = (60618).toLocaleString('tr-TR');
+            document.getElementById("asgariUcretGoster").value = "60.618,00";
             document.getElementById("personelSayisi").value = "10";
             document.getElementById("hesaplamaOrani").value = "5";
 
