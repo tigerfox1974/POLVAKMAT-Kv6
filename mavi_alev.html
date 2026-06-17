@@ -523,6 +523,38 @@
             margin-top: 0 !important;
         }
 
+        /* PDF'de kartların taşmasını önle */
+        body.pdf-export .bank-card {
+            max-width: 100% !important;
+        }
+
+        body.pdf-export .bank-left {
+            width: 180px !important;
+            min-width: 180px !important;
+            padding: 10px 12px !important;
+        }
+
+        body.pdf-export .bank-right {
+            padding: 8px 10px !important;
+        }
+
+        /* PDF'de IBAN/UBAN fontlarını büyüt */
+        body.pdf-export .bank-acct-num {
+            font-size: 19px !important;
+        }
+
+        body.pdf-export .bank-iban-num {
+            font-size: 13.5px !important;
+        }
+
+        body.pdf-export .bank-acct-label {
+            font-size: 9px !important;
+        }
+
+        body.pdf-export .bank-iban-label {
+            font-size: 8.5px !important;
+        }
+
         body.pdf-export #teklifAlani {
             min-height: auto !important;
             padding: 0 !important;
