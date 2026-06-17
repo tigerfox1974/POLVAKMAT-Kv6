@@ -508,10 +508,10 @@
         }
 
         body.pdf-export .bank-accounts {
-            break-before: page;
-            page-break-before: always;
-            margin-top: 0;
-            margin-bottom: 1mm;
+            break-before: page !important;
+            page-break-before: always !important;
+            margin-top: 0 !important;
+            margin-bottom: 1mm !important;
         }
 
         body.pdf-export .bank-accounts h4 {
@@ -522,13 +522,16 @@
             flex-direction: column !important;
             margin-top: 0 !important;
             align-items: center !important;
+            page-break-inside: avoid !important;
         }
 
         /* PDF'de kartları daralt ve ortala */
         body.pdf-export .bank-card {
-            max-width: 175mm !important;
+            max-width: 145mm !important;
             width: 100% !important;
             margin: 0 auto !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
 
         body.pdf-export .bank-left {
@@ -1191,7 +1194,7 @@
             pdfButton.disabled = true;
             pdfButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Hazırlanıyor...';
 
-            const element = document.querySelector("#teklifAlani .invoice-box");
+            const element = document.querySelector("#teklifAlani");
             document.body.classList.add("pdf-export");
 
             const options = {
