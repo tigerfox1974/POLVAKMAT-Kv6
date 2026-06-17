@@ -595,6 +595,82 @@
             margin-top: 4px;
         }
 
+        .discount-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .discount-info.active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .discount-info.inactive {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        .info-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #17a2b8;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: help;
+        }
+
+        .discount-info.inactive .info-icon {
+            background: #6c757d;
+        }
+
+        .info-icon .tooltip-box {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: normal;
+            white-space: nowrap;
+            z-index: 1000;
+            transition: opacity 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .info-icon .tooltip-box::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #2c3e50;
+        }
+
+        .info-icon:hover .tooltip-box {
+            visibility: visible;
+            opacity: 1;
+        }
+
         .inline-check {
             display: flex;
             align-items: center;
@@ -791,6 +867,18 @@
             <div class="form-group">
                 <label>Personel Sayısı:</label>
                 <input type="number" id="personelSayisi" value="10">
+                <div id="discountInfo" class="discount-info" style="display: none;">
+                    <span id="discountInfoText"></span>
+                    <div class="info-icon">
+                        i
+                        <div class="tooltip-box">
+                            İndirim Aralıkları:<br>
+                            100-149 kişi: %5<br>
+                            150-199 kişi: %10<br>
+                            200+ kişi: %15
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -1205,6 +1293,40 @@
             initializeFormState();
         }
 
+        function getDiscountRate(personelSayisi) {
+            if (personelSayisi >= 200) return 15;
+            if (personelSayisi >= 150) return 10;
+            if (personelSayisi >= 100) return 5;
+            return 0;
+        }
+
+        function getDiscountText(personelSayisi) {
+            if (personelSayisi >= 200) return "200 üzerinde olduğundan %15 indirim yapılır";
+            if (personelSayisi >= 150) return "150-199 arasında olduğundan %10 indirim yapılır";
+            if (personelSayisi >= 100) return "100-149 arasında olduğundan %5 indirim yapılır";
+            return "100 altında olduğundan indirim uygulanmaz";
+        }
+
+        function updatePersonelDiscountInfo() {
+            const personelSayisi = parseInt(document.getElementById("personelSayisi").value) || 0;
+            const discountRate = getDiscountRate(personelSayisi);
+            const infoDiv = document.getElementById("discountInfo");
+            const infoText = document.getElementById("discountInfoText");
+
+            if (personelSayisi > 0) {
+                infoDiv.style.display = "flex";
+                infoText.textContent = "✓ " + getDiscountText(personelSayisi);
+                
+                if (discountRate > 0) {
+                    infoDiv.className = "discount-info active";
+                } else {
+                    infoDiv.className = "discount-info inactive";
+                }
+            } else {
+                infoDiv.style.display = "none";
+            }
+        }
+
         function bindAutoCalcEvents() {
             document.getElementById("kurumAdi").addEventListener("input", handleKurumAdiInput);
             document.getElementById("asgariUcretGoster").addEventListener("input", handleAsgariUcretInput);
@@ -1221,6 +1343,13 @@
                 el.addEventListener("input", autoHesaplaIfReady);
                 el.addEventListener("change", autoHesaplaIfReady);
             });
+
+            // Personel sayısı değiştiğinde indirim bilgisini güncelle
+            document.getElementById("personelSayisi").addEventListener("input", updatePersonelDiscountInfo);
+            document.getElementById("personelSayisi").addEventListener("change", updatePersonelDiscountInfo);
+            
+            // İlk yüklemede göster
+            updatePersonelDiscountInfo();
         }
 
         function initializeFormState() {
@@ -1242,15 +1371,34 @@
             const personelSayisi = parseInt(document.getElementById("personelSayisi").value) || 0;
             const oran = parseFloat(document.getElementById("hesaplamaOrani").value) || 0;
 
-            // Hesaplama: personel sayısı × asgari ücret × (oran / 100)
-            const finalTotal = personelSayisi * asgariUcret * (oran / 100);
+            // Ara toplam hesaplama
+            const araTotal = personelSayisi * asgariUcret * (oran / 100);
+
+            // İndirim hesaplama
+            const discountRate = getDiscountRate(personelSayisi);
+            const discountAmount = araTotal * (discountRate / 100);
+            const finalTotal = araTotal - discountAmount;
 
             const oranText = oran.toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
             const kisiBasi = asgariUcret * (oran / 100);
-            const rows = `
+            
+            let rows = `
                 <tr><td>Brüt Asgari Ücret</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>
                 <tr><td>Uygulanan Oran</td><td style="text-align:right;">%${oranText} = ${formatTL(kisiBasi)} / kişi</td></tr>
                 <tr><td>Personel Sayısı</td><td style="text-align:right;">${personelSayisi} kişi</td></tr>`;
+
+            // Eğer indirim varsa, ara toplam + indirim satırı ekle
+            if (discountRate > 0) {
+                rows += `
+                <tr style="border-top: 2px solid #ddd;">
+                    <td><strong>Ara Toplam</strong></td>
+                    <td style="text-align:right;"><strong>${formatTL(araTotal)}</strong></td>
+                </tr>
+                <tr style="color: #28a745;">
+                    <td>${getDiscountText(personelSayisi)}</td>
+                    <td style="text-align:right;">-${formatTL(discountAmount)}</td>
+                </tr>`;
+            }
 
             document.getElementById("kalemlerTablosu").innerHTML = rows;
             document.getElementById("outToplam").innerText = formatTL(finalTotal);
