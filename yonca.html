@@ -521,11 +521,14 @@
         body.pdf-export .bank-cards {
             flex-direction: column !important;
             margin-top: 0 !important;
+            align-items: center !important;
         }
 
-        /* PDF'de kartların taşmasını önle */
+        /* PDF'de kartları daralt ve ortala */
         body.pdf-export .bank-card {
-            max-width: 100% !important;
+            max-width: 175mm !important;
+            width: 100% !important;
+            margin: 0 auto !important;
         }
 
         body.pdf-export .bank-left {
