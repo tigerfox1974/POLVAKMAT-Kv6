@@ -1170,39 +1170,12 @@
             const element = document.querySelector("#teklifAlani .invoice-box");
             document.body.classList.add("pdf-export");
 
-            // Yerel img src'leri base64'e çevir (html2canvas file:// kısıtlaması)            const allImgs = Array.from(element.querySelectorAll("img"));
-            const origSrcs = allImgs.map(img => img.src);            
-            await Promise.all(allImgs.map((img, idx) => new Promise(resolve => {
-                if (!img.src || img.src.startsWith("data:")) {                    resolve(); 
-                    return; 
-                }
-                
-                // Görselin yüklendiğinden emin ol
-                if (!img.complete || img.naturalWidth === 0) {                    img.onload = () => convertToBase64(img, idx, resolve);
-                    img.onerror = () => {                        resolve();
-                    };
-                    return;
-                }
-                
-                convertToBase64(img, idx, resolve);
-            })));
-            
-            function convertToBase64(img, idx, callback) {
-                try {
-                    const cv = document.createElement("canvas");
-                    cv.width = img.naturalWidth || 48;
-                    cv.height = img.naturalHeight || 48;                    
-                    cv.getContext("2d").drawImage(img, 0, 0);
-                    const dataUrl = cv.toDataURL("image/png");
-                    img.src = dataUrl;                } catch(e) {                }
-                callback();
-            }
             const options = {
                 margin: [10, 15, 0, 15],
                 filename: buildPdfFileName(),
                 image: { type: "jpeg", quality: 0.98 },
                 html2canvas: {
-                    scale: 2,
+                    scale: 3,
                     useCORS: true,
                     allowTaint: true,
                     scrollX: -window.scrollX,
