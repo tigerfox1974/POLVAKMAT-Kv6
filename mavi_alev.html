@@ -1233,6 +1233,13 @@
                 return;
             }
 
+            // Mobil cihaz tespiti
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const pdfScale = isMobile ? 2 : 3;  // Mobilde 2, PC'de 3
+            
+            // Scroll sıfırla
+            window.scrollTo(0, 0);
+
             const pdfButton = document.getElementById("btnPdf");
             const originalHtml = pdfButton.innerHTML;
 
@@ -1248,7 +1255,7 @@
                 filename: buildPdfFileName(),
                 image: { type: "jpeg", quality: 0.98 },
                 html2canvas: {
-                    scale: 3,
+                    scale: pdfScale,
                     useCORS: true,
                     allowTaint: true,
                     scrollX: -window.scrollX,
