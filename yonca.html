@@ -302,6 +302,9 @@
             color: #2c3e50;
             line-height: 1.35;
             page-break-inside: avoid;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 100px);
         }
 
         .bank-accounts h3 {
@@ -465,6 +468,19 @@
             white-space: nowrap;
         }
 
+        .page-footer {
+            width: 100%;
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .page-footer img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
         .first-page-note {
             display: block;
             position: absolute;
@@ -512,6 +528,9 @@
             page-break-before: always !important;
             margin-top: 0 !important;
             margin-bottom: 1mm !important;
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: 250mm !important;
         }
 
         body.pdf-export .bank-accounts h4 {
@@ -559,6 +578,10 @@
 
         body.pdf-export .bank-iban-label {
             font-size: 8.5px !important;
+        }
+
+        body.pdf-export .page-footer {
+            margin-top: auto !important;
         }
 
         body.pdf-export #teklifAlani {
@@ -736,6 +759,9 @@
                 margin-left: auto;
                 margin-right: auto;
                 box-sizing: border-box;
+                display: flex !important;
+                flex-direction: column !important;
+                min-height: 250mm !important;
             }
 
             .bank-accounts h3 {
@@ -797,6 +823,10 @@
             .bank-iban-num {
                 font-size: 11px;
                 letter-spacing: 0.2px;
+            }
+
+            .page-footer {
+                margin-top: auto !important;
             }
 
             .input-panel {
@@ -1062,6 +1092,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="page-footer">
+                        <img src="logos/hesap sayfasi altlik.png" alt="Footer">
                     </div>
                 </div>
             </div>
