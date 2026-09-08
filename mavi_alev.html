@@ -844,7 +844,7 @@
 
             <div class="form-group">
                 <label>Personel Sayısı:</label>
-                <input type="number" id="personelSayisi" value="10">
+                <input type="number" id="personelSayisi" value="10" min="1">
             </div>
 
             <div class="form-group">
@@ -859,7 +859,7 @@
 
             <div class="form-group hidden" id="sertifikaGroup">
                 <label>Sertifika Alacak Kişi Sayısı:</label>
-                <input type="number" id="mudahaleSayisi" value="5">
+                <input type="number" id="mudahaleSayisi" value="10" min="1">
                 <div class="note"><i class="fas fa-info-circle"></i> Paket 4 için zorunludur.</div>
             </div>
 
@@ -1084,7 +1084,7 @@
             mudahaleInput.max = String(personelSayisi);
 
             if (setToPersonelOnEnter) {
-                mudahaleInput.value = "1";
+                mudahaleInput.value = String(personelSayisi);
             }
 
             let mudahaleSayisi = Math.max(1, parseInt(mudahaleInput.value) || 1);
@@ -1359,7 +1359,7 @@
             document.getElementById("otelSinifi").value = "1";
             document.getElementById("personelSayisi").value = "10";
             document.getElementById("paketSecimi").value = "1";
-            document.getElementById("mudahaleSayisi").value = "5";
+            document.getElementById("mudahaleSayisi").value = "10";
             document.getElementById("useCustomDiscount").checked = false;
             document.getElementById("discountRate").value = "35";
 
@@ -1413,7 +1413,9 @@
 
             const asgariUcret = parseFloat(document.getElementById("asgariUcret").value);
             const isletmeTuru = document.getElementById("isletmeTuru").value;
-            const personelSayisi = parseInt(document.getElementById("personelSayisi").value) || 0;
+            const personelInput = document.getElementById("personelSayisi");
+            const personelSayisi = Math.max(1, parseInt(personelInput.value) || 1);
+            personelInput.value = String(personelSayisi);
             const paket = document.getElementById("paketSecimi").value;
 
             // Oran Belirle
