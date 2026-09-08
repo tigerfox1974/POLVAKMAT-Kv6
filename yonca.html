@@ -901,7 +901,7 @@
 
             <div class="form-group">
                 <label>Personel Sayısı:</label>
-                <input type="number" id="personelSayisi" value="10">
+                <input type="number" id="personelSayisi" value="10" min="1">
                 <div id="discountInfo" class="discount-info" style="display: none;">
                     <span id="discountInfoText"></span>
                     <div class="info-icon">
@@ -917,9 +917,9 @@
             </div>
 
             <div class="form-group">
-                <label>BAÜ. Oranı (%):</label>
+                <label>Kişi Başı BAÜ Oranı (%):</label>
                 <input type="number" id="hesaplamaOrani" value="5" min="0" max="100" step="0.1">
-                <div class="helper-note">Varsayılan oran %5'tir. Değiştirebilirsiniz.</div>
+                <div class="helper-note">Bu oran kişi başı eğitim ücretini hesaplar. Personel sayısına göre indirim ayrıca uygulanır.</div>
             </div>
 
             <div class="btn-group">
@@ -1353,7 +1353,9 @@
         }
 
         function updatePersonelDiscountInfo() {
-            const personelSayisi = parseInt(document.getElementById("personelSayisi").value) || 0;
+            const personelInput = document.getElementById("personelSayisi");
+            const personelSayisi = Math.max(1, parseInt(personelInput.value) || 1);
+            personelInput.value = String(personelSayisi);
             const discountRate = getDiscountRate(personelSayisi);
             const infoDiv = document.getElementById("discountInfo");
             const infoText = document.getElementById("discountInfoText");
@@ -1413,7 +1415,9 @@
             }
 
             const asgariUcret = parseFloat(document.getElementById("asgariUcret").value) || 0;
-            const personelSayisi = parseInt(document.getElementById("personelSayisi").value) || 0;
+            const personelInput = document.getElementById("personelSayisi");
+            const personelSayisi = Math.max(1, parseInt(personelInput.value) || 1);
+            personelInput.value = String(personelSayisi);
             const oran = parseFloat(document.getElementById("hesaplamaOrani").value) || 0;
 
             // Ara toplam hesaplama
@@ -1429,8 +1433,8 @@
             
             let rows = `
                 <tr><td>Brüt Asgari Ücret</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>
-                <tr><td>Uygulanan Oran</td><td style="text-align:right;">%${oranText} = ${formatTL(kisiBasi)} / kişi</td></tr>
-                <tr><td>Personel Sayısı</td><td style="text-align:right;">${personelSayisi} kişi</td></tr>`;
+                <tr><td>Kişi Başı BAÜ Oranı</td><td style="text-align:right;">%${oranText} = ${formatTL(kisiBasi)} / kişi</td></tr>
+                <tr><td>Yonca Eğitimi Alacak Personel</td><td style="text-align:right;">${personelSayisi} Kişi</td></tr>`;
 
             // Eğer indirim varsa, ara toplam + indirim satırı ekle
             if (discountRate > 0) {
@@ -1440,7 +1444,7 @@
                     <td style="text-align:right;"><strong>${formatTL(araTotal)}</strong></td>
                 </tr>
                 <tr style="color: #28a745;">
-                    <td>${getDiscountText(personelSayisi)}</td>
+                    <td>${personelSayisi} kişi için otomatik %${discountRate} indirim uygulanmıştır</td>
                     <td style="text-align:right;">-${formatTL(discountAmount)}</td>
                 </tr>`;
             }
