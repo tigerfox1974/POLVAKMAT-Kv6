@@ -1437,13 +1437,13 @@
             // Tablo Satırlarını Oluştur
             if (paket === "1") {
                 rows += `<tr><td>Tesis Sabit Ücreti</td><td style="text-align:right;">${formatTL(sabitUcret)}</td></tr>`;
-                rows += `<tr><td>Personel Belge Ücreti (${personelSayisi} kişi)</td><td style="text-align:right;">${formatTL(belgeUcreti)}</td></tr>`;
+                rows += `<tr><td>Paket 4 Eğitimi Alacak Personel (${personelSayisi} Kişi)</td><td style="text-align:right;">${formatTL(belgeUcreti)}</td></tr>`;
                 rows += `<tr><td><strong>Paket 1 Toplamı</strong></td><td style="text-align:right;"><strong>${formatTL(p1_toplam)}</strong></td></tr>`;
                 finalTotal = p1_toplam;
             }
             else if (paket === "2") {
-                rows += `<tr><td>Paket 1 (Temel Eğitim)</td><td style="text-align:right;">${formatTL(p1_toplam)}</td></tr>`;
-                rows += `<tr><td>Tatbikat Ücreti (1 Asgari Ücret)</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>`;
+                rows += `<tr><td>Paket 1 Temel Eğitim (${personelSayisi} Kişi)</td><td style="text-align:right;">${formatTL(p1_toplam)}</td></tr>`;
+                rows += `<tr><td>Paket 2 (Tatbikat)</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>`;
                 finalTotal = p1_toplam + asgariUcret;
             }
             else if (paket === "3") {
@@ -1469,10 +1469,10 @@
                 });
                 finalTotal = hamToplam - indirim;
 
-                rows += `<tr><td>Paket 1 (Temel Eğitim)</td><td style="text-align:right;">${formatTL(p1_toplam)}</td></tr>`;
-                rows += `<tr><td>Paket 2 (Tatbikat Farkı)</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>`;
+                rows += `<tr><td>Paket 1 Temel Eğitim (${personelSayisi} Kişi)</td><td style="text-align:right;">${formatTL(p1_toplam)}</td></tr>`;
+                rows += `<tr><td>Paket 2 (Tatbikat)</td><td style="text-align:right;">${formatTL(asgariUcret)}</td></tr>`;
                 rows += `<tr><td>Paket 3 (Denetim & Raporlama)</td><td style="text-align:right;">${formatTL(p3_toplam)}</td></tr>`;
-                rows += `<tr><td>Sertifikalı Personel (${mudahaleSayisi} Kişi)</td><td style="text-align:right;">${formatTL(sertifikaMaliyeti)}</td></tr>`;
+                rows += `<tr><td>Paket 4 Eğitimi Alacak Personel (${mudahaleSayisi} Kişi)</td><td style="text-align:right;">${formatTL(sertifikaMaliyeti)}</td></tr>`;
                 rows += `<tr><td><em>Ara Toplam</em></td><td style="text-align:right;"><em>${formatTL(hamToplam)}</em></td></tr>`;
                 rows += `<tr class="discount-row"><td>Kampanya İndirimi (%${discountPercentText})</td><td style="text-align:right;">- ${formatTL(indirim)}</td></tr>`;
             }
